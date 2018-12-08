@@ -8,7 +8,7 @@ let sample = """
 		"age": 46
 	},
 	"title": "Eloquent JavaScript, Second Edition",
-	"publishingDate": "2014-12-14"
+	"date": "2014-12-14"
 }
 """
 
@@ -22,6 +22,12 @@ struct Book: Codable {
 	let author: Author
 	let title: String
 	let publishingDate: String
+
+    enum CodingKeys: String, CodingKey {
+        case author
+        case title
+        case publishingDate = "date"
+    }
 }
 
 struct Author: Codable {
@@ -32,15 +38,10 @@ struct Author: Codable {
 // decoder
 do {
 	let decoder = JSONDecoder()
+    decoder.keyDecodingStrategy = .convertFromSnakeCase
 	let book = try decoder.decode(Book.self, from: jsonData)
     print(book)
 } catch let error {
 	print(error)
 }
 
-/* Cases to test:
-1- the properties naming matching the json keys
-2- the properties naming matching the json keys but in different case (puplishingDate property is puplishing_date in json, should use (decoder.keyDecodingStrategy = .convertFromSnakeCase))
-3- the properties naming matching the json keys except for one key (use CodingKeys to map the keys)
-4- how to read the decoding errors
-*/
